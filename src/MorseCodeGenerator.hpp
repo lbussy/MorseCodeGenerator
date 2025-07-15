@@ -1,5 +1,5 @@
 /**
- * @file MorseCodeTranslator.hoo
+ * @file MorseCodeGenerator.hpp
  *
  * This project is is licensed under the MIT License. See LICENSE.MIT.md
  * for more information.
@@ -26,18 +26,19 @@
  */
 
 #pragma once
-#ifndef MORSE_CODE_TRANSLATOR_HPP
-#define MORSE_CODE_TRANSLATOR_HPP
+#ifndef MORSE_CODE_GENERATOR_HPP
+#define MORSE_CODE_GENERATOR_HPP
 
 #include <unordered_map>
 #include <string>
+#include <string_view>
 #include <stdexcept>
 #include <cctype>
 #include <sstream>
 #include <vector>
 
 /**
- * @class MorseCodeTranslator
+ * @class MorseCodeGenerator
  * @brief Translates alphanumeric text and prosigns into Morse code.
  *
  * Supports letters (A–Z), digits (0–9), punctuation, and prosigns
@@ -46,13 +47,13 @@
  *
  * Unsupported characters will throw an exception during translation.
  */
-class MorseCodeTranslator
+class MorseCodeGenerator
 {
 public:
     /**
      * @brief Default constructor.
      */
-    MorseCodeTranslator() = default;
+    MorseCodeGenerator() = default;
 
     /**
      * @brief Sets the message to be translated.
@@ -64,6 +65,16 @@ public:
         message = msg;
         words = tokenizeMessage(message);
         wordIndex = 0;
+    }
+
+    /**
+     * @brief Sets the message from a string_view.
+     *
+     * @param msg The input text message to be converted to Morse code.
+     */
+    void setMessage(std::string_view msg)
+    {
+        setMessage(std::string(msg));
     }
 
     /**
@@ -97,7 +108,6 @@ public:
                 result += "       "; // 7 spaces between words
             }
 
-            // Check if the word is a valid prosign
             if (prosigns.count(word))
             {
                 result += prosigns.at(word);
@@ -172,16 +182,10 @@ public:
     }
 
 private:
-    std::string message;            ///< Original input message.
-    std::vector<std::string> words; ///< Tokenized word list.
-    size_t wordIndex = 0;           ///< Tracks current word position.
+    std::string message;
+    std::vector<std::string> words;
+    size_t wordIndex = 0;
 
-    /**
-     * @brief Splits a message into uppercase words by whitespace.
-     *
-     * @param msg Input string to tokenize.
-     * @return Vector of uppercase word tokens.
-     */
     std::vector<std::string> tokenizeMessage(const std::string &msg) const
     {
         std::vector<std::string> tokens;
@@ -198,78 +202,28 @@ private:
         return tokens;
     }
 
-    /**
-     * @brief Morse code lookup table for letters, digits, and punctuation.
-     */
     const std::unordered_map<char, std::string> morseTable{
-        // Letters
-        {'A', ". -"},
-        {'B', "- . . ."},
-        {'C', "- . - ."},
-        {'D', "- . ."},
-        {'E', "."},
-        {'F', ". . - ."},
-        {'G', "- - ."},
-        {'H', ". . . ."},
-        {'I', ". ."},
-        {'J', ". - - -"},
-        {'K', "- . -"},
-        {'L', ". - . ."},
-        {'M', "- -"},
-        {'N', "- ."},
-        {'O', "- - -"},
-        {'P', ". - - ."},
-        {'Q', "- - . -"},
-        {'R', ". - ."},
-        {'S', ". . ."},
-        {'T', "-"},
-        {'U', ". . -"},
-        {'V', ". . . -"},
-        {'W', ". - -"},
-        {'X', "- . . -"},
-        {'Y', "- . - -"},
+        {'A', ". -"}, {'B', "- . . ."}, {'C', "- . - ."}, {'D', "- . ."}, {'E', "."},
+        {'F', ". . - ."}, {'G', "- - ."}, {'H', ". . . ."}, {'I', ". ."}, {'J', ". - - -"},
+        {'K', "- . -"}, {'L', ". - . ."}, {'M', "- -"}, {'N', "- ."}, {'O', "- - -"},
+        {'P', ". - - ."}, {'Q', "- - . -"}, {'R', ". - ."}, {'S', ". . ."}, {'T', "-"},
+        {'U', ". . -"}, {'V', ". . . -"}, {'W', ". - -"}, {'X', "- . . -"}, {'Y', "- . - -"},
         {'Z', "- - . ."},
-
-        // Digits
-        {'0', "- - - - -"},
-        {'1', ". - - - -"},
-        {'2', ". . - - -"},
-        {'3', ". . . - -"},
-        {'4', ". . . . -"},
-        {'5', ". . . . ."},
-        {'6', "- . . . ."},
-        {'7', "- - . . ."},
-        {'8', "- - - . ."},
-        {'9', "- - - - ."},
-
-        // Punctuation
-        {'.', ". - . - . -"},
-        {',', "- - . . - -"},
-        {':', "- - - . . ."},
-        {'?', ". . - - . ."},
-        {'/', "- . . - ."},
-        {'-', "- . . . . -"},
-        {'(', "- . - - . -"},
-        {')', "- . - - . -"},
-        {'=', "- . . . -"},
-        {'+', ". - . - ."},
-        {'&', ". - . . ."},
-        {'\'', ". - - - - ."},
-        {'!', "- . - . - -"},
-        {'_', ". . - - . -"},
-        {'"', ". - . . - ."},
-        {'$', ". . . - . . -"},
-        {'@', ". - - . - ."},
+        {'0', "- - - - -"}, {'1', ". - - - -"}, {'2', ". . - - -"}, {'3', ". . . - -"},
+        {'4', ". . . . -"}, {'5', ". . . . ."}, {'6', "- . . . ."}, {'7', "- - . . ."},
+        {'8', "- - - . ."}, {'9', "- - - - ."},
+        {'.', ". - . - . -"}, {',', "- - . . - -"}, {':', "- - - . . ."}, {'?', ". . - - . ."},
+        {'/', "- . . - ."}, {'-', "- . . . . -"}, {'(', "- . - - . -"}, {')', "- . - - . -"},
+        {'=', "- . . . -"}, {'+', ". - . - ."}, {'&', ". - . . ."}, {'\'', ". - - - - ."},
+        {'!', "- . - . - -"}, {'_', ". . - - . -"}, {'"', ". - . . - ."},
+        {'$', ". . . - . . -"}, {'@', ". - - . - ."},
     };
 
-    /**
-     * @brief Prosigns defined by ITU-R M.1677-1 and used in amateur radio.
-     */
     const std::unordered_map<std::string, std::string> prosigns{
-        {"AR", ". - . - ."},   // End of message
-        {"SK", ". . . - . -"}, // Silent Key / End of work
-        {"BT", "- . . . -"},   // Paragraph break
+        {"AR", ". - . - ."},
+        {"SK", ". . . - . -"},
+        {"BT", "- . . . -"},
     };
 };
 
-#endif // MORSE_CODE_TRANSLATOR_HPP
+#endif // MORSE_CODE_GENERATOR_HPP

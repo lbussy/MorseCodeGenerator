@@ -29,18 +29,32 @@ A modern C++17 class that translates alphanumeric text and common prosigns into 
 ```cpp
 #include "MorseCodeTranslator.hpp"
 
-MorseCodeTranslator tx;
-tx.setMessage("CQ AR DE K");
+MorseCodeTranslator morse_message;
+morse_message.setMessage(std::string("CQ AR DE K"));
 
 // Get entire translation
-std::string morse = tx.getMessage();
+std::string morse = morse_message.getMessage();
 std::cout << morse << std::endl;
 
 // Get word-by-word translation
 std::string next;
-while ((next = tx.getNext()) != "<EOM>") {
+while ((next = morse_message.getNext()) != "<EOM>") {
     std::cout << next << std::endl;
 }
+```
+
+Note: `setMessage()` is overloaded for a `std::string` or `std::string_view`. You must explicitly construct one or the other:
+
+```cpp
+MorseCodeTranslator morse_message;
+morse_message.setMessage(std::string("CQ AR DE K"));
+```
+
+or
+
+```cpp
+MorseCodeTranslator morse_message;
+morse_message.setMessage(std::string_view("CQ AR DE K"));
 ```
 
 ## Prosigns
@@ -74,11 +88,11 @@ g++ -std=c++17 -o test test.cpp
 #include <cassert>
 
 int main() {
-    MorseCodeTranslator tx;
-    tx.setMessage("AR SK");
-    assert(tx.getNext() == ". - . - .");
-    assert(tx.getNext() == ". . . - . -");
-    assert(tx.getNext() == "<EOM>");
+    MorseCodeTranslator morse_message;
+    morse_message.setMessage("AR SK");
+    assert(morse_message.getNext() == ". - . - .");
+    assert(morse_message.getNext() == ". . . - . -");
+    assert(morse_message.getNext() == "<EOM>");
     return 0;
 }
 ```
